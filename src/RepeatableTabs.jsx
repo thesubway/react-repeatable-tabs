@@ -1,13 +1,28 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+const styles = {
+  div: { display: "flex", marginBottom: 20 },
+  line: {
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    borderBottom: "1px solid black"
+  },
+  tab: {
+    position: "relative",
+    width: 80,
+    fontSize: 11
+  }
+};
+
 const propTypes = {
   marginBottom: PropTypes.number,
-  handleTabClick: PropTypes.func
+  onClickTab: PropTypes.func
 };
 
 const defaultProps = {
-  marginBottom: 0
+  marginBottom: 20
 };
 
 class RepeatableTabs extends React.Component {
@@ -17,21 +32,21 @@ class RepeatableTabs extends React.Component {
       activeTabIndex: 0,
       activeCopyIdx: null
     };
-    this.handleTabClick = this.handleTabClick.bind(this);
+    this.onClickTab = this.onClickTab.bind(this);
   }
 
-  handleTabClick(tabIndex, copyIdx) {
+  onClickTab(tabIndex, copyIdx) {
     this.setState({
       activeTabIndex: tabIndex,
       activeCopyIdx: copyIdx
     });
-    this.props.handleTabClick(tabIndex);
+    this.props.onClickTab(tabIndex);
   }
 
   renderChildrenWithTabsApiAsProps() {
     return React.Children.map(this.props.children, (child, index) => {
       return React.cloneElement(child, {
-        onClick: this.handleTabClick,
+        onClick: this.onClickTab,
         tabIndex: index,
         isActive: index === this.state.activeTabIndex
       });
@@ -50,9 +65,7 @@ class RepeatableTabs extends React.Component {
   render() {
     return (
       <div className="tabs">
-        <StyledDiv marginBottom={this.props.marginBottom}>
-          {this.renderChildrenWithTabsApiAsProps()}
-        </StyledDiv>
+        <div style={styles.div}>{this.renderChildrenWithTabsApiAsProps()}</div>
         <div className="tabs-active-content">
           {this.renderActiveTabContent()}
         </div>
@@ -66,7 +79,7 @@ RepeatableTabs.defaultProps = defaultProps;
 
 export const Tab = props => {
   return (
-    <StyledTab>
+    <div style={styles.tab}>
       <div
         onClick={event => {
           event.preventDefault();
@@ -77,8 +90,10 @@ export const Tab = props => {
         {/* i is the icon */}
         <i />
       </div>
-      {props.isActive ? <StyledLine isActive={props.isActive} /> : null}
-    </StyledTab>
+      {props.isActive ? (
+        <div style={styles.line} isActive={props.isActive} />
+      ) : null}
+    </div>
   );
 };
 export default RepeatableTabs;
